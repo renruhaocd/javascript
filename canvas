@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>canvas</title>
+		<style type="text/css">
+			canvas{
+				border:1px solid black;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="mycanvas" width="800px" height="600px">
+			<p>您的浏览器暂不支持canvas，请更新至最新版，或更换浏览器！</p>
+		</canvas>
+		<script>
+			var canvas=document.getElementById('mycanvas');
+			var ctx=canvas.getContext('2d');
+			function myStroke(){
+				
+			}
+			
+			//直线
+			ctx.beginPath();
+			ctx.moveTo(50,50);
+			ctx.lineTo(200,50);
+			ctx.strokeStyle='red';
+			ctx.lineWidth=10;
+			ctx.closePath();
+			ctx.stroke();
+			
+			
+			//三角形
+			ctx.beginPath();
+			ctx.lineWidth=5;
+			ctx.strokeStyle='yellow';
+			ctx.moveTo(50,100);
+			ctx.lineTo(50,200);
+			ctx.lineTo(200,200);
+			ctx.closePath();
+			ctx.stroke();
+			ctx.fillStyle='#ccc';
+			ctx.fill();
+			
+			
+			//矩形
+			//方式1
+			ctx.beginPath();
+			ctx.strokeStyle='#000';
+			ctx.moveTo(50,250);
+			ctx.lineTo(50,400);
+			ctx.lineTo(200,400);
+			ctx.lineTo(200,250);
+			ctx.closePath();
+			ctx.stroke();
+			//方式2
+			ctx.beginPath();
+			ctx.strokeRect(50,450,150,100);//绘制空心矩形
+			//ctx.fillRect(50,450,150,100);绘制实心矩形
+			ctx.closePath();
+			//方式3
+			ctx.beginPath();
+			ctx.rect(100,475,50,50);
+			ctx.stroke();
+			ctx.fillStyle='dodgerblue';
+			ctx.fill();
+			ctx.closePath();
+			
+			//圆形
+			ctx.beginPath();
+			ctx.arc(350,100,70,0,2*Math.PI);
+			ctx.lineWidth='1';
+			ctx.stroke();
+			//半圆（顺时针，false，默认）
+			ctx.beginPath();
+			ctx.arc(350,200,70,0,Math.PI,false);
+			ctx.closePath();
+			ctx.stroke();
+			//半圆（逆时针，true）
+			ctx.beginPath();
+			ctx.arc(350,400,70,0,Math.PI,true);
+			ctx.closePath();
+			ctx.stroke();
+			
+			//文字
+			ctx.beginPath();
+			ctx.font='italic 50px Arial';
+			ctx.lineWidth='2';
+			ctx.strokeText('hello world ！',500,50);
+			ctx.closePath();
+			
+			ctx.beginPath();
+			ctx.font='italic 50px Arial';
+			ctx.fillText('hello world ！',500,150);
+			ctx.closePath();
+			
+			//渐变色（线性）
+			ctx.beginPath();
+			//创建渐变对象，参数是起点坐标和终点坐标
+			var gradient=ctx.createLinearGradient(500,200,700,200);//左右渐变
+			//var gradient=ctx.createLinearGradient(500,200,500,300);//上下渐变
+			//指定渐变过程，0表示开始，即0%，1表示结束，即100%
+			gradient.addColorStop(0,'#f00');
+			gradient.addColorStop(1,'#00f');
+			ctx.fillStyle=gradient;
+			//绘制图形时，渐变色只存在于渐变对象的‘线’坐标内的范围，
+			//左边（或上边）超出范围显示0的颜色，右边（或下边）超出的范围显示1的颜色
+			ctx.fillRect(500,200,200,100);
+			ctx.closePath();
+			
+			//径向渐变
+			ctx.beginPath();
+			//创建渐变对象，两个圆，一外（大）一内（小）
+			var gradient=ctx.createRadialGradient(600,450,10,600,450,100);
+			//指定从内圆到外圆之间区域的渐变色，内圆显示0的颜色，外圆之外显示1的颜色，中间渐变
+			gradient.addColorStop(0,'#f00');
+			gradient.addColorStop(1,'#00f');
+			ctx.fillStyle=gradient;
+			ctx.fillRect(500,350,200,200);
+			
+			
+			//此外，图形还可以设置平移，旋转等属性，值得注意的是，此类操作都是针对整个canvas坐标轴的
+		</script>
+	</body>
+</html>
