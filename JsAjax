@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>ajax</title>
+	</head>
+	<body>
+		<p>点击按钮，通过ajax获取的内容将插入body中</p>
+		<button>点我</button>
+		<p class="ajax"></p>
+		<script>
+			var pg=document.getElementsByClassName('ajax')[0];
+			var btn=document.getElementsByTagName('button')[0];
+			var man;
+			btn.onclick=function(){
+				ajax('ajax.txt',function(data){
+					//man=eval('('+data+')');//把json格式的数据转换成js对象的两种方式
+					man=JSON.parse(data);
+					for( var key in man){
+						pg.innerHTML+=key+':'+man[key]+'<br/>';
+					}
+				});
+			};
+			
+			function ajax(url,Fnsucc,Fnfail){
+				var oAjax = new XMLHttpRequest() || new ActiveXObject('Microsoft.XMLHTTP');
+				oAjax.open('get',url,true);
+				oAjax.send();
+				oAjax.onreadystatechange = function (){
+					if(oAjax.readyState == 4){//0 还没有调用open();1 刚调用了send()；
+						//2 send()完成,接收到全部内容；3 正在解析内容；4 解析完成。
+						if(oAjax.status == 200){//http状态码，200 服务器成功返回网页；
+							//404 服务器没有找到相关网页；503 服务不可用；等等。
+							Fnsucc(oAjax.responseText);//解析完成后的文件内容。
+						}else{
+							if(Fnfail){
+								Fnfail(oAjax.status);//根据http错误状态码，进行相应处理。
+							}	
+						}
+					}
+				}
+			}
+		</script>
+	</body>
+</html>
