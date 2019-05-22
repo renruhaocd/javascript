@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>SimonGame</title>
+		<style>
+			*{
+				padding:0;
+				margin:0;
+				text-align: center;
+			}
+			body{
+ 				background-image: url('http://cdn.backgroundhost.com/backgrounds/subtlepatterns/retina_wood.png');
+				user-select:none;
+			}
+			h1{
+				margin-top:50px;
+				margin-bottom: 50px;
+			}
+			.num{
+				font-size:16px;
+				font-weight: bold;
+				line-height: 20px;
+				vertical-align: top;
+			}
+			.times{
+				line-height: 40px;
+				font-size: 20px;
+				font-weight: bold;
+			}
+			.left{
+				display: inline-block;
+				height:0;
+				width:20px;
+				border:10px solid transparent;
+				border-left-color:#000;
+			}
+			.right{
+				display: inline-block;
+				height:0;
+				width:20px;
+				border:10px solid transparent;
+				border-right-color:#000;
+			}
+			.wrap{
+				margin-top:50px;
+				margin-bottom: 50px;
+			}
+			.wrap div{
+				display: inline-block;
+				width:100px;
+				height:100px;
+				border:5px solid transparent;
+				border-radius: 100%;
+				opacity: 0.5;
+				margin-right:20px;
+			}
+			div.red{
+				border-color: red;
+			}
+			div.blue{
+				border-color: blue;
+			}
+			div.green{
+				border-color: green;
+			}
+			div.yellow{
+				border-color:yellow;
+				margin-right:0;
+			}
+			button{
+				width:100px;
+				height:36px;
+				border-radius: 10px;
+				outline: none;
+				margin-right:50px;
+			}
+			.mode{
+				font-size: 14px;
+				font-weight: bold;
+			}
+			.mode span{
+				display: inline-block;
+				height: 12px;
+				width: 12px;
+				border-radius: 100%;
+				border:2px solid #000;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Simon Game</h1>
+		<div class="mes">
+			<p class="times">TIMES</p>
+			<p>
+				<span class="left"></span>
+				<span class="num">0</span>
+				<span class="right"></span>
+			</p>
+		</div>
+		<div class="wrap">
+			<div class="red">red</div>
+			<div class="blue">blue</div>
+			<div class="green">green</div>
+			<div class="yellow">yellow</div>
+		</div>
+		<p>
+			<button>START</button>
+			<span class="mode">STRICT　MODE : <span></span></span>
+		</p>
+		<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+  crossorigin="anonymous"></script>
+  		<script>
+  			var r={
+  				mode:false,
+  				num:1,
+  				order:[],
+  				myOrder:[]
+  			};
+  			
+  			function twinkle(ele){//div闪烁
+  				ele.css('background-color',ele.text());
+  				setTimeout(function(){
+  					ele.css('background-color','');
+  				},200);
+  			}
+  			
+  			function setOrder(){//设置下一次的顺序
+  				r.order=[];
+  				for(var i=0;i<r.num;i++){
+  					r.order.push(parseInt(Math.random()*4));
+  				}
+  			}
+  			
+  			function sysOrder(){//按照下一次的顺序自动闪烁
+  				$('.num').text(r.num);
+  				var i=0;
+  				var timer=setInterval(function(){
+  					twinkle($('.wrap div').eq(r.order[i]));
+  					i++;
+  					if(i==r.num){
+  						clearInterval(timer);
+  					}
+  				},500);
+  			}
+  			function check(){//检查玩家点击顺序是否和系统指定顺序一致
+  				if(r.myOrder.length==r.order.length){//玩家点完后才检测
+  					if(r.myOrder.toString()==r.order.toString()){
+  						//如果一致，则num+1，生成下一次的顺序，清空玩家顺序
+						r.num+=1;
+						r.myOrder=[];
+						setOrder(r.num);
+						return true;
+					}else{
+						//如果不一致，
+						if(!r.mode){
+							//非严格模式，清空玩家顺序，重新闪烁一次系统顺序
+							r.myOrder=[];
+							sysOrder();
+							return false;
+						}else{
+							//严格模式，游戏结束！						
+							alert('Game Over ！');
+							window.location.reload();
+						}	
+					}
+  				}
+  			}
+  			
+  			function startGame(){//开始游戏
+  				$('.wrap div').on('click',function(){
+	  					twinkle($(this));
+	  					if(r.myOrder.length<r.num){
+	  						r.myOrder.push($(this).index());
+	  					}
+  				});
+				setOrder();
+				sysOrder();
+				var timer,t;
+				t=setInterval(function(){//每秒循环检测游戏是否已通关
+					if(r.num>5){
+  						alert('游戏通关！');
+  						clearInterval(t);
+  						window.location.reload();
+	  				}else{
+	  					timer=setInterval(function(){
+	  						//没秒循环检测玩家顺序和系统顺序是否一致
+				  			if(check()){
+				  				//一致，生成新的系统序列
+				  				clearInterval(timer);
+				  				if(r.num<=5){
+				  					sysOrder();
+				  				}
+				  			}
+						},1000);
+	  				}
+				},1000);				
+  			}
+  			function init(){//入口函数
+  				$('.mode span').on('click',function(){
+  					if(r.mode){
+  						r.mode=false;
+  						$(this).css('background-color','none');
+  					}else{
+  						r.mode=true;
+  						$(this).css('background-color','orangered');
+  					}
+  				});
+  				$('button').on('click',function(){
+  					startGame();
+  				});
+  			}
+  			init();
+  		</script>
+	</body>
+</html>
