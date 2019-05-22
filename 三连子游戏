@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>三连子游戏</title>
+		<style>
+			.wrp{
+				position: relative;
+				border:none;
+				margin: 50px 50%;
+				left:-150px;
+			}
+			div{
+				width:100px;
+				height:100px;
+				position: absolute;
+				border:5px solid #000;
+				line-height: 100px;
+				text-align: center;
+				font-size: 50px;
+			}
+			p{
+				text-align: center;
+			}
+			button{
+				font-size: 20px;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<p><button>重新游戏</button></p>
+		<div class="wrp">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+		
+		<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+  integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+  crossorigin="anonymous"></script>
+  <script>
+  	var r={
+  		over:false,
+  		key:true,
+  		id:undefined,
+  		used:[0,1,2,3,4,5,6,7,8],
+  		winner:[
+  		[0,1,2],
+  		[3,4,5],
+  		[6,7,8],
+  		[0,3,6],
+  		[1,4,7],
+  		[2,5,8],
+  		[0,4,8],
+  		[2,4,6]
+  		]
+  	};
+  	function setGameArea(){//生成棋盘，绑定ID
+  		for(var i=0;i<9;i++){
+	  		$('.wrp div').eq(i).attr('id',i);
+	  		if(i<3){
+	  			$('.wrp div').eq(i).css('left',i*100+'px');
+	  		}else if(i>2 && i<6){
+	  			$('.wrp div').eq(i).css('left',(i-3)*100+'px');
+	  			$('.wrp div').eq(i).css('top','100px');
+	  		}else{
+	  			$('.wrp div').eq(i).css('left',(i-6)*100+'px');
+	  			$('.wrp div').eq(i).css('top','200px');
+	  		}
+  		}
+  	}
+  	
+  	function playChess(){//，开始游戏，出棋
+  			if(r.key){
+  				setClick();
+  				r.key=false;
+  			}else{
+  				computerChess();
+  				r.key=true;
+  			}
+  	}
+  	
+  	function setClick(){//玩家出棋时，绑定点击事件
+  		$('.wrp div').on('click',function(){
+  			$(this).text('O');
+  			var index=r.used.indexOf(parseInt($(this).attr('id')));
+  			r.used.splice(index,1);
+  			clearClick();
+  			computerChess();
+  			checkWinner();
+  		});
+  	}
+  	function clearClick(){//玩家出棋后清除点击事件
+  		$('.wrp div').unbind('click');
+  	}
+  	
+  	function computerChess(){//电脑出棋
+  		r.id=getNextId();
+  		var index=r.used.indexOf(r.id);
+  		$('.wrp div').eq(r.id).text('X');
+  		r.used.splice(index,1);
+  		setClick();
+  	}
+  	
+  	function checkWinner(){//检查获胜方
+  		if(r.used.length<4 && r.used.length>=0){
+  			var mes=[];
+  			for(var i=0;i<9;i++){
+  				mes.push($('.wrp div').eq(i).text());
+  			}
+  			var pOrC;
+  			r.over=r.winner.some(function(v){
+  				if(mes[v[0]]==mes[v[1]] && mes[v[2]]==mes[v[1]]){
+  					pOrC=mes[v[0]];
+  					return true;
+  				}else{
+  					return false;
+  				}
+  			});
+			if(r.over){
+				gameOver(pOrC);
+			}
+  		}else if(r.used.length==0){
+  			alert('平局！');
+  		}
+  	}
+  	function gameOver(winner){
+		if(winner=='O'){
+			alert('你赢了！恭喜！');
+		}else{
+			alert("很遗憾，你输了！");
+		}
+  	}
+  	
+  	function getNextId(){//随机获取空白棋盘的id
+  		return r.used[parseInt(Math.random()*r.used.length)];
+  	}
+  	
+  	function init(){//入口函数
+  		setGameArea();
+  		playChess();
+  		$('button').on('click',function(){
+  			if(r.over){
+  				window.location.reload();
+  			}else{
+  				r.over=true;
+  				playChess();
+  			}
+  		});
+  	}
+  	
+  	init();
+  </script>
+	</body>
+</html>
